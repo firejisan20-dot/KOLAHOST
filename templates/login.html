@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if mode == 'signup' %}Create account{% else %}Sign in{% endif %} - JISAN Hosting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(120, 40, 200, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(40, 100, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255, 60, 120, 0.1) 0%, transparent 50%),
+                #0a0a0a;
+            z-index: 0;
+        }
+
+        .floating-orbs {
+            position: fixed; width: 100%; height: 100%; overflow: hidden; z-index: 0;
+        }
+
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+        .orb1 { width: 400px; height: 400px; background: #dc2626; top: -100px; left: -100px; }
+        .orb2 { width: 300px; height: 300px; background: #991b1b; bottom: -50px; right: -50px; animation-delay: -7s; }
+        .orb3 { width: 250px; height: 250px; background: #db2777; top: 40%; right: 20%; animation-delay: -14s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -40px) scale(1.05); }
+            66% { transform: translate(-30px, 30px) scale(0.95); }
+        }
+
+        .login-container {
+            position: relative; z-index: 10; width: 100%; max-width: 450px; padding: 20px;
+            animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            background: rgba(22, 22, 30, 0.85);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 40px 36px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-area { text-align: center; margin-bottom: 32px; }
+
+        .logo-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 26px; font-weight: 700; color: white;
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+        }
+
+        .logo-area h1 {
+            font-size: 26px; font-weight: 500; color: #f1f5f9; margin-bottom: 6px;
+        }
+
+        .logo-area p { color: #94a3b8; font-size: 15px; }
+
+        .error-box, .success-box {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 16px; border-radius: 12px;
+            margin-bottom: 20px; font-size: 14px;
+        }
+        .error-box {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+        }
+        .success-box {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            color: #86efac;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 500;
+            color: #94a3b8; margin-bottom: 8px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 15, 22, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+
+        .input-wrapper input::placeholder { color: #64748b; }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 8px;
+            position: relative;
+            transition: all 0.25s;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
+        }
+
+        .btn-login.loading { pointer-events: none; opacity: 0.8; }
+        .btn-login.loading span { visibility: hidden; }
+        .btn-login.loading::after {
+            content: '';
+            position: absolute;
+            width: 22px; height: 22px;
+            top: 50%; left: 50%;
+            margin: -11px 0 0 -11px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .switch-mode {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .switch-mode a {
+            color: #f87171;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+        .switch-mode a:hover { text-decoration: underline; }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 28px;
+            color: #64748b;
+            font-size: 13px;
+        }
+        .footer-text span { color: #f87171; font-weight: 500; }
+
+        .gmail-hint {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+        .gmail-hint svg { flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="floating-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-area">
+                <div class="logo-icon">J</div>
+                {% if mode == 'signup' %}
+                    <h1>Create account</h1>
+                    <p>Sign up with your Gmail to get started</p>
+                {% else %}
+                    <h1>Sign in</h1>
+                    <p>to continue to JISAN Hosting</p>
+                {% endif %}
+            </div>
+
+            {% if error %}
+            <div class="error-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            {% if success %}
+            <div class="success-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                {{ success }}
+            </div>
+            {% endif %}
+
+            {% if mode == 'signup' %}
+            <form method="POST" action="{{ url_for('signup') }}" id="authForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="name" placeholder="Your name" autocomplete="name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Gmail / Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" placeholder="you@gmail.com" required autofocus autocomplete="email">
+                    </div>
+                    <div class="gmail-hint">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#ea4335"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+                        Use your Gmail address for easy recovery
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" placeholder="At least 6 characters" required autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="confirm" placeholder="Repeat password" required autocomplete="new-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn-login" id="authBtn">
+                    <span>Create account</span>
+                </button>
+            </form>
+            <div class="switch-mode">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Sign in</a>
+            </div>
+            {% else %}
+            <form method="POST" action="{{ url_for('login') }}" id="authForm">
+                <div class="form-group">
+                    <label>Gmail / Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" placeholder="you@gmail.com" required autofocus autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn-login" id="authBtn">
+                    <span>Next</span>
+                </button>
+            </form>
+            <div class="switch-mode">
+                Don't have an account?
+                <a href="{{ url_for('signup') }}">Create one</a>
+            </div>
+            {% endif %}
+
+            <div class="footer-text">
+                Powered by <span>JISAN Premium</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('authForm').addEventListener('submit', function() {
+            document.getElementById('authBtn').classList.add('loading');
+        });
+    </script>
+</body>
+</html>

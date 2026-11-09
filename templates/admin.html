@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - JISAN Hosting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background: #050505; min-height: 100vh; color: #e2e8f0;
+        }
+        .bg {
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse at 10% 20%, rgba(220, 38, 38, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(153, 27, 27, 0.1) 0%, transparent 50%),
+                #050505;
+            z-index: 0;
+        }
+        .navbar {
+            position: relative; z-index: 50;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 32px;
+            background: rgba(15, 15, 20, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .nav-brand { display: flex; align-items: center; gap: 12px; }
+        .nav-logo {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 18px; color: white;
+        }
+        .nav-brand h2 { font-size: 18px; font-weight: 500; color: #f1f5f9; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-link, .logout-btn {
+            color: #94a3b8; text-decoration: none; font-size: 14px;
+            padding: 8px 16px; border-radius: 10px; transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .nav-link:hover { color: #f87171; background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.2); }
+        .logout-btn:hover { color: #f87171; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
+
+        .main { position: relative; z-index: 10; max-width: 1150px; margin: 0 auto; padding: 36px 24px 60px; }
+        .page-title { font-size: 26px; font-weight: 600; margin-bottom: 8px; color: #f1f5f9; }
+        .page-sub { color: #94a3b8; font-size: 14px; margin-bottom: 28px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; margin-bottom: 28px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px; padding: 20px 22px;
+        }
+        .stat-card .label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+        .stat-card .value { font-size: 28px; font-weight: 700; color: #f1f5f9; }
+        .stat-card .value.green { color: #4ade80; }
+        .stat-card .value.purple { color: #f87171; }
+
+        .section-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 18px; overflow: hidden; margin-bottom: 24px;
+        }
+        .section-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 15px; font-weight: 500; color: #e2e8f0;
+        }
+        .section-body { padding: 20px 22px; }
+
+        .ad-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .ad-row input {
+            flex: 1; min-width: 220px;
+            padding: 12px 14px;
+            background: rgba(15,15,22,0.7);
+            border: 1.5px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: #f1f5f9; font-size: 14px;
+            font-family: inherit; outline: none;
+        }
+        .ad-row input:focus { border-color: #dc2626; }
+        .btn-save {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white; border: none; padding: 12px 22px;
+            border-radius: 10px; font-size: 14px; font-weight: 500;
+            cursor: pointer; font-family: inherit;
+        }
+        .btn-save:hover { opacity: 0.9; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left; padding: 12px 16px;
+            font-size: 11px; font-weight: 500; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        td {
+            padding: 13px 16px; font-size: 13px; color: #cbd5e1;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 9px; border-radius: 50px; font-size: 11px; font-weight: 500;
+        }
+        .badge-running { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+        .badge-stopped { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+        .badge-starting { background: rgba(250,204,21,0.1); color: #facc15; border: 1px solid rgba(250,204,21,0.2); }
+        .badge-admin { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.25); font-size: 10px; margin-left: 4px; }
+        .badge-banned { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); font-size: 10px; margin-left: 4px; }
+
+        .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+        .dot-running { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+        .dot-stopped { background: #f87171; }
+        .dot-starting { background: #facc15; }
+
+        .btn-action {
+            padding: 4px 10px; border-radius: 7px; font-size: 11px;
+            cursor: pointer; font-family: inherit; border: 1px solid;
+            margin-right: 4px; transition: all 0.15s;
+        }
+        .btn-stop { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.25); }
+        .btn-stop:hover { background: rgba(239,68,68,0.22); }
+        .btn-ban { background: rgba(251,146,60,0.12); color: #fb923c; border-color: rgba(251,146,60,0.25); }
+        .btn-ban:hover { background: rgba(251,146,60,0.22); }
+        .btn-unban { background: rgba(74,222,128,0.12); color: #4ade80; border-color: rgba(74,222,128,0.25); }
+        .btn-unban:hover { background: rgba(74,222,128,0.22); }
+
+        .email-cell { color: #94a3b8; font-size: 12px; }
+        .uid-cell { font-family: monospace; font-size: 12px; color: #f87171; }
+        .time-cell { font-size: 12px; color: #94a3b8; }
+
+        @media (max-width: 700px) {
+            .navbar { padding: 14px 16px; }
+            .main { padding: 24px 14px; }
+            th, td { padding: 10px 10px; font-size: 12px; }
+            .hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">J</div>
+            <h2>JISAN Admin</h2>
+        </div>
+        <div class="nav-right">
+            <a href="/dashboard" class="nav-link">← Dashboard</a>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <h1 class="page-title">Admin Panel</h1>
+        <p class="page-sub">Manage users, ban/block, set ad link, see who is running</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Total Users</div>
+                <div class="value purple" id="totalUsers">{{ total_users }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Currently Running</div>
+                <div class="value green" id="runningCount">{{ running_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Stopped / Idle</div>
+                <div class="value">{{ total_users - running_count }}</div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">Arolinks Settings</div>
+            <div class="section-body">
+                <div style="margin-bottom:14px;font-size:13px;color:#94a3b8;">API Token</div>
+                <div class="ad-row" style="margin-bottom:18px;">
+                    <input type="text" id="arolinksTokenInput" value="{{ arolinks_token }}" placeholder="Your Arolinks API token">
+                    <button class="btn-save" onclick="saveArolinksToken()">Save Token</button>
+                </div>
+                <div style="margin-bottom:14px;font-size:13px;color:#94a3b8;">Public Panel URL (required for Arolinks — use VPS IP / domain, NOT localhost)</div>
+                <div class="ad-row">
+                    <input type="url" id="publicUrlInput" value="{{ public_base_url }}" placeholder="http://YOUR_VPS_IP:5000">
+                    <button class="btn-save" onclick="savePublicUrl()">Save URL</button>
+                </div>
+                <div style="margin-top:10px;font-size:12px;color:#64748b;">
+                    Example: http://123.45.67.89:5000 &nbsp;|&nbsp; Arolinks rejects localhost / 127.0.0.1
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">All Users</div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name / Email</th>
+                            <th class="hide-mobile">Game UID</th>
+                            <th>Status</th>
+                            <th class="hide-mobile">Time Left</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>#{{ u.id }}</td>
+                            <td>
+                                <div style="font-weight:500;color:#f1f5f9;">
+                                    {{ u.name or '—' }}
+                                    {% if u.is_admin %}<span class="badge badge-admin">ADMIN</span>{% endif %}
+                                    {% if u.is_banned %}<span class="badge badge-banned">BANNED</span>{% endif %}
+                                </div>
+                                <div class="email-cell">{{ u.email }}</div>
+                            </td>
+                            <td class="uid-cell hide-mobile">{{ u.game_uid }}</td>
+                            <td>
+                                {% if u.status == 'running' %}
+                                <span class="badge badge-running"><span class="dot dot-running"></span> Running</span>
+                                {% elif u.status == 'starting' %}
+                                <span class="badge badge-starting"><span class="dot dot-starting"></span> Starting</span>
+                                {% else %}
+                                <span class="badge badge-stopped"><span class="dot dot-stopped"></span> Stopped</span>
+                                {% endif %}
+                            </td>
+                            <td class="time-cell hide-mobile">
+                                {% if u.is_admin %}
+                                    Unlimited
+                                {% elif u.remaining > 0 %}
+                                    {{ (u.remaining // 3600) }}h {{ ((u.remaining % 3600) // 60) }}m
+                                {% else %}
+                                    <span style="color:#f87171;">Expired</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not u.is_admin %}
+                                    {% if u.status == 'running' or u.status == 'starting' %}
+                                    <button class="btn-action btn-stop" onclick="stopUser({{ u.id }})">Stop</button>
+                                    {% endif %}
+                                    {% if u.is_banned %}
+                                    <button class="btn-action btn-unban" onclick="unbanUser({{ u.id }})">Unban</button>
+                                    {% else %}
+                                    <button class="btn-action btn-ban" onclick="banUser({{ u.id }})">Ban</button>
+                                    {% endif %}
+                                {% else %}
+                                <span style="color:#475569;font-size:12px;">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" style="text-align:center;padding:40px;color:#64748b;">No users yet</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function stopUser(id) {
+            if (!confirm('Stop this user\'s bot?')) return;
+            fetch('/api/admin/stop_user/' + id, { method: 'POST' })
+                .then(r => r.json()).then(d => { if (d.success) location.reload(); else alert('Failed'); });
+        }
+        function banUser(id) {
+            if (!confirm('Ban this user? They will be logged out and cannot start bot.')) return;
+            fetch('/api/admin/ban/' + id, { method: 'POST' })
+                .then(r => r.json()).then(d => {
+                    alert(d.message || (d.success ? 'Banned' : 'Failed'));
+                    if (d.success) location.reload();
+                });
+        }
+        function unbanUser(id) {
+            fetch('/api/admin/unban/' + id, { method: 'POST' })
+                .then(r => r.json()).then(d => {
+                    alert(d.message || (d.success ? 'Unbanned' : 'Failed'));
+                    if (d.success) location.reload();
+                });
+        }
+        function saveArolinksToken() {
+            const token = document.getElementById('arolinksTokenInput').value.trim();
+            if (!token || token.length < 10) { alert('Enter a valid Arolinks API token'); return; }
+            fetch('/api/admin/set_arolinks_token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            }).then(r => r.json()).then(d => alert(d.message || (d.success ? 'Saved' : 'Failed')));
+        }
+        function savePublicUrl() {
+            const url = document.getElementById('publicUrlInput').value.trim();
+            fetch('/api/admin/set_public_url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            }).then(r => r.json()).then(d => alert(d.message || (d.success ? 'Saved' : 'Failed')));
+        }
+        setInterval(() => {
+            fetch('/api/admin/stats').then(r => r.json()).then(d => {
+                document.getElementById('totalUsers').textContent = d.total_users;
+                document.getElementById('runningCount').textContent = d.running;
+            }).catch(() => {});
+        }, 8000);
+    </script>
+</body>
+</html>

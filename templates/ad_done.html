@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Complete - JISAN Hosting</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: #050505; color: #e2e8f0;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .card {
+            background: rgba(22,22,30,0.9); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 36px; max-width: 420px; text-align: center;
+        }
+        h1 { font-size: 22px; margin-bottom: 12px; }
+        p { color: #94a3b8; margin-bottom: 20px; }
+        a {
+            display: inline-block; padding: 12px 24px;
+            background: linear-gradient(135deg,#dc2626,#b91c1c);
+            color: white; text-decoration: none; border-radius: 10px; font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if success %}
+        <h1 style="color:#4ade80;">✓ Success</h1>
+        <p>{{ message }}</p>
+        {% else %}
+        <h1 style="color:#f87171;">Failed</h1>
+        <p>{{ message }}</p>
+        {% endif %}
+        <a href="/login">Go to Login / Dashboard</a>
+    </div>
+</body>
+</html>

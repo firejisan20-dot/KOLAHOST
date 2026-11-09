@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JISAN Hosting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background: #050505;
+            min-height: 100vh;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Background */
+        .bg {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 10% 20%, rgba(220, 38, 38, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(153, 27, 27, 0.1) 0%, transparent 50%),
+                #050505;
+            z-index: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: relative;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 32px;
+            background: rgba(15, 15, 20, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-logo {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+        }
+
+        .nav-brand h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #dc2626, #db2777);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .logout-btn:hover {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Content */
+        .main {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeInUp 0.6s ease 0.1s both;
+            backdrop-filter: blur(12px);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-info h3 {
+            font-size: 15px;
+            font-weight: 400;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .status-info .status-text {
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.running {
+            background: #22c55e;
+            box-shadow: 0 0 12px #22c55e;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        .status-dot.stopped {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+
+        .status-dot.starting {
+            background: #eab308;
+            box-shadow: 0 0 12px #eab308;
+            animation: pulse-dot 0.8s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .status-running { color: #4ade80; }
+        .status-stopped { color: #f87171; }
+        .status-starting { color: #facc15; }
+
+        /* Control Card */
+        .control-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 28px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+            backdrop-filter: blur(12px);
+        }
+
+        .control-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-card h3 span {
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s;
+        }
+
+        .form-group input:focus {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.08);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: #475569;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+        }
+
+        .btn-restart:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn.loading {
+            pointer-events: none;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Logs Card */
+        .logs-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 28px 32px;
+            animation: fadeInUp 0.6s ease 0.3s both;
+            backdrop-filter: blur(12px);
+        }
+
+        .logs-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 18px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logs-box {
+            background: #0c0c12;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 16px;
+            height: 280px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #94a3b8;
+        }
+
+        .logs-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .logs-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .logs-box::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
+        .log-line {
+            padding: 2px 0;
+            animation: logIn 0.3s ease;
+        }
+
+        @keyframes logIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-line .time {
+            color: #64748b;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 22px;
+            background: rgba(15, 15, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            color: #e2e8f0;
+            font-size: 14px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        .toast.error {
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">J</div>
+            <h2>JISAN Hosting</h2>
+        </div>
+        <div class="nav-right">
+            {% if is_admin %}
+            <a href="/admin" class="logout-btn" style="color:#f87171;border-color:rgba(248,113,113,0.25);">Admin Panel</a>
+            {% endif %}
+            <div class="user-badge">
+                <div class="user-avatar">{{ username[0]|upper }}</div>
+                <span>{{ username }}</span>
+            </div>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <!-- Time Banner -->
+        <div id="timeBanner" style="
+            background: {% if has_time %}rgba(34,197,94,0.1){% else %}rgba(239,68,68,0.1){% endif %};
+            border: 1px solid {% if has_time %}rgba(34,197,94,0.25){% else %}rgba(239,68,68,0.25){% endif %};
+            border-radius: 16px; padding: 16px 22px; margin-bottom: 22px;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+            animation: fadeInUp 0.5s ease both;
+        ">
+            <div>
+                <div style="font-size:13px;color:#94a3b8;margin-bottom:4px;">Hosting Time</div>
+                <div style="font-size:18px;font-weight:600;" id="timeText">
+                    {% if is_admin %}
+                        <span style="color:#f87171;">Unlimited (Admin)</span>
+                    {% elif has_time %}
+                        <span style="color:#4ade80;" id="countdownText">Loading...</span>
+                    {% else %}
+                        <span style="color:#f87171;">No active time</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if not is_admin %}
+            <a href="/watch-ad" style="
+                background: linear-gradient(135deg,#dc2626,#b91c1c); color:white;
+                padding: 10px 20px; border-radius: 10px; text-decoration: none;
+                font-size: 14px; font-weight: 500;
+                box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+            ">▶ Watch Ad → Get {{ free_hours }}h</a>
+            {% endif %}
+        </div>
+
+        <!-- Status -->
+        <div class="status-card">
+            <div class="status-info">
+                <h3>Bot Status</h3>
+                <div class="status-text" id="statusText">
+                    <span class="status-dot stopped" id="statusDot"></span>
+                    <span id="statusLabel" class="status-stopped">Stopped</span>
+                </div>
+            </div>
+            <div style="text-align: right; color: #64748b; font-size: 13px;">
+                <div>TCP Bot Panel</div>
+                <div style="margin-top: 4px; color: #f87171;">Premium Edition</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="control-card">
+            <h3><span>⚡</span> Bot Control</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Free Fire UID</label>
+                    <input type="text" id="uidInput" placeholder="Enter UID" value="{{ uid }}">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="text" id="passInput" placeholder="Enter Password" value="{{ password }}">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-start" id="btnStart" onclick="startBot()">
+                    <span class="btn-text">▶ Start</span>
+                </button>
+                <button class="btn btn-stop" id="btnStop" onclick="stopBot()">
+                    <span class="btn-text">■ Stop</span>
+                </button>
+                <button class="btn btn-restart" id="btnRestart" onclick="restartBot()">
+                    <span class="btn-text">↻ Restart</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="logs-card">
+            <h3><span>📋</span> Live Logs</h3>
+            <div class="logs-box" id="logsBox">
+                <div class="log-line"><span class="time">[--:--:--]</span> Waiting for actions...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentStatus = "stopped";
+
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById("toast");
+            toast.textContent = msg;
+            toast.className = "toast " + type + " show";
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+
+        function updateStatusUI(status) {
+            currentStatus = status;
+            const dot = document.getElementById("statusDot");
+            const label = document.getElementById("statusLabel");
+            const btnStart = document.getElementById("btnStart");
+            const btnStop = document.getElementById("btnStop");
+            const btnRestart = document.getElementById("btnRestart");
+
+            if (dot) dot.className = "status-dot " + status;
+            if (label) label.className = "status-" + status;
+
+            if (status === "running") {
+                if (label) label.textContent = "Running";
+                if (btnStart) btnStart.disabled = true;
+                if (btnStop) btnStop.disabled = false;
+                if (btnRestart) btnRestart.disabled = false;
+            } else if (status === "starting") {
+                if (label) label.textContent = "Starting...";
+                if (btnStart) btnStart.disabled = true;
+                if (btnStop) btnStop.disabled = false;  // allow stop while starting
+                if (btnRestart) btnRestart.disabled = true;
+            } else {
+                if (label) label.textContent = "Stopped";
+                if (btnStart) btnStart.disabled = false;
+                if (btnStop) btnStop.disabled = true;
+                if (btnRestart) btnRestart.disabled = false;
+            }
+        }
+
+        function updateLogs(logs) {
+            const box = document.getElementById("logsBox");
+            if (!logs || logs.length === 0) return;
+
+            box.innerHTML = logs.map(line => {
+                const match = line.match(/^\[([^\]]+)\]\s*(.*)/);
+                if (match) {
+                    return `<div class="log-line"><span class="time">[${match[1]}]</span> ${match[2]}</div>`;
+                }
+                return `<div class="log-line">${line}</div>`;
+            }).join("");
+
+            box.scrollTop = box.scrollHeight;
+        }
+
+        let remainingSec = {{ remaining if remaining is defined else 0 }};
+        const isAdmin = {{ 'true' if is_admin else 'false' }};
+
+        function formatTime(sec) {
+            if (sec <= 0) return "0h 0m 0s";
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return h + "h " + m + "m " + s + "s";
+        }
+
+        function updateCountdown() {
+            if (isAdmin) return;
+            const el = document.getElementById("countdownText");
+            if (!el) return;
+            if (remainingSec > 0) {
+                el.textContent = formatTime(remainingSec) + " left";
+                el.style.color = "#4ade80";
+                remainingSec--;
+            } else {
+                el.textContent = "No active time";
+                el.style.color = "#f87171";
+            }
+        }
+        if (!isAdmin) {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch("/api/status");
+                const data = await res.json();
+                updateStatusUI(data.status);
+                updateLogs(data.logs);
+                if (typeof data.remaining === "number" && !isAdmin) {
+                    remainingSec = data.remaining;
+                }
+            } catch (e) {}
+        }
+
+        async function startBot() {
+            const uid = document.getElementById("uidInput").value.trim();
+            const password = document.getElementById("passInput").value.trim();
+
+            if (!uid || !password) {
+                showToast("UID and Password required", "error");
+                return;
+            }
+
+            const btn = document.getElementById("btnStart");
+            btn.classList.add("loading");
+
+            try {
+                const res = await fetch("/api/start", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ uid, password })
+                });
+                const data = await res.json();
+                if (data.need_ad) {
+                    showToast(data.message, "error");
+                    setTimeout(() => { window.location.href = "/watch-ad"; }, 1200);
+                } else {
+                    showToast(data.message, data.success ? "success" : "error");
+                    if (data.success) updateStatusUI("running");
+                }
+            } catch (e) {
+                showToast("Connection error", "error");
+            }
+
+            btn.classList.remove("loading");
+            fetchStatus();
+        }
+
+        async function stopBot() {
+            const btn = document.getElementById("btnStop");
+            btn.classList.add("loading");
+            // Instant UI — 1 click feel
+            updateStatusUI("stopped");
+
+            try {
+                const res = await fetch("/api/stop", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+                const data = await res.json();
+                showToast(data.message || "Bot stopped", data.success ? "success" : "error");
+                updateStatusUI("stopped");
+            } catch (e) {
+                showToast("Connection error", "error");
+            }
+
+            btn.classList.remove("loading");
+            fetchStatus();
+        }
+
+        async function restartBot() {
+            const uid = document.getElementById("uidInput").value.trim();
+            const password = document.getElementById("passInput").value.trim();
+
+            if (!uid || !password) {
+                showToast("UID and Password required", "error");
+                return;
+            }
+
+            const btn = document.getElementById("btnRestart");
+            btn.classList.add("loading");
+
+            try {
+                const res = await fetch("/api/restart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ uid, password })
+                });
+                const data = await res.json();
+                if (data.need_ad) {
+                    showToast(data.message, "error");
+                    setTimeout(() => { window.location.href = "/watch-ad"; }, 1200);
+                } else {
+                    showToast(data.message, data.success ? "success" : "error");
+                    if (data.success) updateStatusUI("running");
+                }
+            } catch (e) {
+                showToast("Connection error", "error");
+            }
+
+            btn.classList.remove("loading");
+            fetchStatus();
+        }
+
+        // Auto refresh status every 3 seconds
+        setInterval(fetchStatus, 3000);
+        fetchStatus();
+    </script>
+</body>
+</html>
